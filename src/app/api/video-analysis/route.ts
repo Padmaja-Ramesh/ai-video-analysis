@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { env } from "@/config/env";
 import { YoutubeTranscript } from "youtube-transcript";
+import connectDB from "@/lib/mongodb";
+import VideoAnalysis from "@/models/VideoAnalysis";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +15,21 @@ export async function POST(request: NextRequest) {
         success: false,
         message: "Video URL is required"
       }, { status: 400 });
+    }
+
+    // Connect to MongoDB
+    await connectDB();
+
+    // Check if analysis already exists
+    const existingAnalysis = await VideoAnalysis.findOne({ videoUrl: body.videoUrl });
+    if (existingAnalysis) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          summary: existingAnalysis.summary,
+          main_points: existingAnalysis.main_points
+        }
+      }, { status: 200 });
     }
 
     const genAI = new GoogleGenerativeAI(env.REACT_APP_GOOGLE_API_KEY);
@@ -71,9 +88,21 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
+    // Save to MongoDB
+    const videoAnalysis = new VideoAnalysis({
+      videoUrl: body.videoUrl,
+      summary: parsedAnalysis.summary,
+      main_points: parsedAnalysis.main_points
+    });
+
+    await videoAnalysis.save();
+
     return NextResponse.json({
       success: true,
-      data: parsedAnalysis
+      data: {
+        summary: parsedAnalysis.summary,
+        main_points: parsedAnalysis.main_points
+      }
     }, { status: 200 });
 
   } catch (error) {
@@ -81,6 +110,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: false,
       message: "Internal server error"
+    }, { status: 500 });
+  }
+}
+
+// GET endpoint to fetch all video analyses
+export async function GET() {
+  try {
+    await connectDB();
+    const analyses = await VideoAnalysis.find({})
+      .sort({ createdAt: -1 })
+      .select('videoUrl summary main_points createdAt')
+      .limit(10);
+
+    return NextResponse.json({
+      success: true,
+      data: analyses
+    }, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching analyses:", error);
+    return NextResponse.json({
+      success: false,
+      message: "Failed to fetch analyses"
     }, { status: 500 });
   }
 }
