@@ -3,14 +3,33 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+interface MainPoint {
+  timestamp: string;
+  title: string;
+  description: string;
+}
+
+interface AnalysisResult {
+  summary: string;
+  main_points: MainPoint[];
+}
+
+interface ApiResponse {
+  success: boolean;
+  data?: AnalysisResult;
+  message?: string;
+}
+
 export function YouTubeInput() {
   const [videoUrl, setVideoUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState("");
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleAnalyze = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const response = await fetch("/api/video-analysis", {
         method: "POST",
@@ -19,10 +38,21 @@ export function YouTubeInput() {
         },
         body: JSON.stringify({ videoUrl }),
       });
-      const data = await response.json();
-      setAnalysisResult(data);
+      const data: ApiResponse = await response.json();
+      console.log(data)
+      
+      if (!data.success) {
+        throw new Error(data.message || "Failed to analyze video");
+      }
+      
+      if (!data.data) {
+        throw new Error("No analysis data received");
+      }
+      
+      setAnalysisResult(data.data);
     } catch (error) {
       console.error("Error analyzing video:", error);
+      setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -62,13 +92,46 @@ export function YouTubeInput() {
           </div>
         )}
       </div>
-      {analysisResult && (
-        <div className="mt-4 bg-white/[0.05] border border-white/[0.1] rounded-lg p-4">
-          <h2 className="text-lg font-medium text-zinc-300 mb-2">Summary of the video</h2>
-          <p className="text-sm text-zinc-400">{analysisResult}</p>
+
+      {error && (
+        <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+          <p className="text-red-400">{error}</p>
         </div>
       )}
-      
+
+      {analysisResult && (
+        <div className="mt-4 bg-white/[0.05] border border-white/[0.1] rounded-lg p-4">
+          <h2 className="text-lg font-medium text-zinc-300 mb-2">🎤 Video Summary</h2>
+          <p className="text-sm text-zinc-400 mb-4">
+            <strong>Summary:</strong> {analysisResult.summary}
+          </p>
+
+          <h3 className="text-md font-semibold text-zinc-300 mb-2">🧭 Main Points with Timestamps</h3>
+          <ul className="list-disc list-inside space-y-2 text-sm text-zinc-400">
+            {analysisResult.main_points.map((point, index) => {
+              // Extract the first start timestamp in seconds
+              const match = point.timestamp.match(/(\d+):(\d+)/);
+              const seconds = match ? parseInt(match[1]) * 60 + parseInt(match[2]) : 0;
+              const href = `${videoUrl}&t=${seconds}s`;
+
+              return (
+                <li key={index}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:underline"
+                  >
+                    <strong>{point.timestamp}</strong>
+                  </a>
+                  <br />
+                  <em>{point.title}:</em> {point.description}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
