@@ -15,6 +15,40 @@ const mainPointSchema = new mongoose.Schema({
   },
 });
 
+const transcriptEntrySchema = new mongoose.Schema({
+  timestamp: {
+    type: String,
+    required: true,
+  },
+  text: {
+    type: String,
+    required: true,
+  },
+});
+
+const topicMentionSchema = new mongoose.Schema({
+  timestamp: {
+    type: String,
+    required: true,
+  },
+  context: {
+    type: String,
+    required: true,
+  },
+});
+
+const topicSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  mentions: [topicMentionSchema],
+});
+
 const videoAnalysisSchema = new mongoose.Schema({
   videoUrl: {
     type: String,
@@ -23,9 +57,11 @@ const videoAnalysisSchema = new mongoose.Schema({
   },
   summary: {
     type: String,
-    required: true,
+    required: false,
   },
   main_points: [mainPointSchema],
+  transcript: [transcriptEntrySchema],
+  topics: [topicSchema],
   createdAt: {
     type: Date,
     default: Date.now,

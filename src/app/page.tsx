@@ -19,7 +19,8 @@ export default async function Home() {
         </div>
 
         {/* Main Content */}
-        <div className="mt-16">
+        <div className="mt-16 space-y-8">
+          {/* Video Analysis Section */}
           <div className="overflow-hidden rounded-2xl bg-white/[0.05] shadow-xl ring-1 ring-white/[0.1]">
             <div className="p-8">
               <YouTubeInput />

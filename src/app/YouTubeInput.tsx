@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { TranscriptionSection } from "./components/TranscriptionSection";
 
 interface MainPoint {
   timestamp: string;
@@ -132,6 +133,11 @@ export function YouTubeInput() {
           </ul>
         </div>
       )}
+
+      {/* Transcription Section */}
+      <div className="mt-8">
+        <TranscriptionSection videoUrl={videoUrl} />
+      </div>
     </div>
   );
 }
