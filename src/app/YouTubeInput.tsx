@@ -27,7 +27,6 @@ export function YouTubeInput() {
   const [isLoading, setIsLoading] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   const handleAnalyze = async () => {
     setIsLoading(true);

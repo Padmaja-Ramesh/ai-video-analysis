@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { callOpenAI } from '@/lib/openaiClient';
 import { callGemini } from '@/lib/geminiClient';
-import { env } from '@/config/env';
 
 export async function POST(req: NextRequest) {
   try {
