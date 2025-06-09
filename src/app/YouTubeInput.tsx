@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TranscriptionSection } from "./components/TranscriptionSection";
+import ModelSelector from "./components/ModelSelector";
 
 interface MainPoint {
   timestamp: string;
@@ -138,7 +139,10 @@ export function YouTubeInput() {
       <div className="mt-8">
         <TranscriptionSection videoUrl={videoUrl} />
       </div>
-    </div>
+          <div className="mt-8">
+          <ModelSelector videoUrl={ "gemini-2.0-flash" , videoUrl} />
+        </div>
+      </div>
   );
 }
 
