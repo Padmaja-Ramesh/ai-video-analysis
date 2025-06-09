@@ -79,69 +79,79 @@ export function YouTubeInput() {
             className="w-full px-4 py-3 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           />
         </div>
-
+      </div>
+<div className="grid grid-cols-2 gap-4 text-white">
+    <div>
+      <h3>Summary Section</h3>
         <button
-          type="button"
-          disabled={!videoUrl.trim()}
-          className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
-          onClick={handleAnalyze}
-        >
-          {isLoading ? "Analyzing..." : "Analyze Video"}
-        </button>
-        {isLoading && (
-          <div className="mt-4 text-zinc-400">
-            <p>This may take a few seconds...</p>
-          </div>
-        )}
-      </div>
+            type="button"
+            disabled={!videoUrl.trim()}
+            className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
+            onClick={handleAnalyze}
+          >
+            {isLoading ? "Analyzing..." : "Analyze Video"}
+          </button>
 
-      {error && (
-        <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-          <p className="text-red-400">{error}</p>
-        </div>
-      )}
+            {isLoading && (
+              <div className="mt-4 text-zinc-400">
+                <p>This may take a few seconds...</p>
+              </div>
+            )}
 
-      {analysisResult && (
-        <div className="mt-4 bg-white/[0.05] border border-white/[0.1] rounded-lg p-4">
-          <h2 className="text-lg font-medium text-zinc-300 mb-2">🎤 Video Summary</h2>
-          <p className="text-sm text-zinc-400 mb-4">
-            <strong>Summary:</strong> {analysisResult.summary}
-          </p>
+          {error && (
+            <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+              <p className="text-red-400">{error}</p>
+            </div>
+          )}
 
-          <h3 className="text-md font-semibold text-zinc-300 mb-2">🧭 Main Points with Timestamps</h3>
-          <ul className="list-disc list-inside space-y-2 text-sm text-zinc-400">
-            {analysisResult.main_points.map((point, index) => {
-              // Extract the first start timestamp in seconds
-              const match = point.timestamp.match(/(\d+):(\d+)/);
-              const seconds = match ? parseInt(match[1]) * 60 + parseInt(match[2]) : 0;
-              const href = `${videoUrl}&t=${seconds}s`;
+          {analysisResult && (
+            <div className="mt-4 bg-white/[0.05] border border-white/[0.1] rounded-lg p-4">
+              <h2 className="text-lg font-medium text-zinc-300 mb-2">🎤 Video Summary </h2>
+              <p className="text-sm text-zinc-400 mb-4">
+                <strong>Summary:</strong> {analysisResult.summary}
+              </p>
 
-              return (
-                <li key={index}>
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-400 hover:underline"
-                  >
-                    <strong>{point.timestamp}</strong>
-                  </a>
-                  <br />
-                  <em>{point.title}:</em> {point.description}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
+              <h3 className="text-md font-semibold text-zinc-300 mb-2">🧭 Main Points with Timestamps</h3>
+              <ul className="list-disc list-inside space-y-2 text-sm text-zinc-400">
+                {analysisResult.main_points.map((point, index) => {
+                  // Extract the first start timestamp in seconds
+                  const match = point.timestamp.match(/(\d+):(\d+)/);
+                  const seconds = match ? parseInt(match[1]) * 60 + parseInt(match[2]) : 0;
+                  const href = `${videoUrl}&t=${seconds}s`;
 
-      {/* Transcription Section */}
-      <div className="mt-8">
+                  return (
+                    <li key={index}>
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-400 hover:underline"
+                      >
+                        <strong>{point.timestamp}</strong>
+                      </a>
+                      <br />
+                      <em>{point.title}:</em> {point.description}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+    </div>
+    <div><h3>Transcript</h3>
+          {/* Transcription Section */}
         <TranscriptionSection videoUrl={videoUrl} />
-      </div>
-          <div className="mt-8">
+        </div>
+</div>
+<div className="grid grid-cols-1 gap-4 text-white">
+    <div>Analyze</div>
+    <div className="mt-8">
           <ModelSelector videoUrl={ "gemini-2.0-flash" , videoUrl} />
         </div>
+</div>     
+
+
+
       </div>
   );
 }

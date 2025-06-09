@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     try {
         if (!process.env.REACT_APP_GOOGLE_API_KEY) {
           throw new Error('GEMINI_API_KEY is not configured');
-        }
+      }
         response = await callGemini(query);
 
       return NextResponse.json({ response });
