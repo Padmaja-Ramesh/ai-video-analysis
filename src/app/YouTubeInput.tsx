@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { TranscriptionSection } from "./components/TranscriptionSection";
 import ModelSelector from "./components/ModelSelector";
 

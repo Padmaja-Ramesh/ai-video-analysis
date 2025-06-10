@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
 
       // Create new document in MongoDB
       console.log('Saving to MongoDB...');
-      const newAnalysis = await VideoAnalysis.create({
+      await VideoAnalysis.create({
         videoUrl: body.videoUrl,
         summary: parsedAnalysis.summary,
         main_points: parsedAnalysis.main_points
