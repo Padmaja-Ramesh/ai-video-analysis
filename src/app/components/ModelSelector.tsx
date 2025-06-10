@@ -4,7 +4,11 @@ import { useState } from 'react';
 
 const models = ['gemini-1.5-flash', 'gemini-2.0-flash-lite', 'gemini-2.0-flash', 'gemini-2.0-flash-exp', 'gemini-1.5-flash-8b'];
 
-export default function ModelSelector() {
+interface ModelSelectorProps {
+  videoUrl: string;
+}
+
+export default function ModelSelector({ videoUrl }: ModelSelectorProps) {
   const [model, setModel] = useState(models[0]);
   const [query, setQuery] = useState('');
   const [result, setResult] = useState('');
@@ -27,7 +31,7 @@ export default function ModelSelector() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ model, query }),
+        body: JSON.stringify({ model, query, videoUrl }),
       });
 
       const data = await res.json();
